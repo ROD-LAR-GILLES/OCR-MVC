@@ -14,6 +14,11 @@ class DynamicDictionaryManager:
     """Gestiona el diccionario dinámico."""
     
     def __init__(self):
+        """Inicializa el gestor del diccionario dinámico.
+        
+        Establece la conexión con el diccionario dinámico principal
+        para gestionar correcciones y aprendizaje automático.
+        """
         self.dictionary = dynamic_dictionary
     
     def seed_from_external_source(self, source_path: Path) -> int:
