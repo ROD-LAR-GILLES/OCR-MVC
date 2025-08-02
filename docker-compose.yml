@@ -1,0 +1,13 @@
+services:
+  ocr-system:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: ocr-mvc-system
+    volumes:
+      - ./pdfs:/app/pdfs
+      - ./resultado:/app/resultado
+      - .:/app
+    stdin_open: true  
+    tty: true     
+    command: python -u backend/views/cli/menu.py

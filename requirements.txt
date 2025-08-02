@@ -1,0 +1,30 @@
+# OCR y procesamiento de imágenes
+pytesseract==0.3.10
+opencv-python==4.8.1.78
+Pillow==10.0.1
+
+# Procesamiento de PDFs
+pdfplumber==0.9.0
+PyPDF2==3.0.1
+PyMuPDF==1.23.5
+
+# Análisis de datos
+pandas==2.1.1
+numpy==1.24.3
+
+# IA y LLM (opcional)
+openai==0.28.1
+requests==2.31.0
+
+# Utilidades
+python-dotenv==1.0.0
+
+# Procesamiento avanzado de imágenes
+scipy==1.11.4
+scikit-image==0.22.0
+imutils==0.5.4
+
+# Logging y formatos
+loguru==0.7.2
+tabulate==0.9.0
+markdown==3.5
