@@ -647,3 +647,4 @@ class AdvancedPDFProcessor:
 
 # Instancia global para compatibilidad
 pdf_processor = AdvancedPDFProcessor()
+# Auto-generated comment - 20:13:37
