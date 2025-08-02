@@ -341,3 +341,5 @@ class ResultManager:
         base_name = Path(filename).stem
         return f"{next_num:02d}_{base_name}"
 # Auto-generated comment - 20:13:37
+
+# Auto-generated comment - 20:13:37
