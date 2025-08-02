@@ -161,3 +161,4 @@ class OCRController:
     
     def get_results_dir(self) -> Path:
         return self.results_dir
+# Auto-generated comment - 20:13:37
