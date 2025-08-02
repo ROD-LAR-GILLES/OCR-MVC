@@ -158,3 +158,4 @@ class TesseractConfig:
 
 # Instancia global para uso directo
 tesseract_config = TesseractConfig()
+# Auto-generated comment - 20:13:37
