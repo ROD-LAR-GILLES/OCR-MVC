@@ -83,15 +83,22 @@ class DynamicDictionaryManager:
             return False
     
     def get_learning_report(self) -> Dict[str, any]:
-        """Genera reporte de aprendizaje dinámico."""
+        """Genera reporte de aprendizaje dinámico.
+        
+        Returns:
+            Diccionario con estadísticas completas del aprendizaje
+        """
         stats = self.dictionary.get_statistics()
         
         return {
             'timestamp': datetime.now().isoformat(),
             'learning_mode': 'dynamic',
-            'hardcoded_words': 0,
+            'hardcoded_words': 0,  # ¡CERO palabras hardcodeadas!
             'learned_corrections': stats['total_corrections'],
             'learned_vocabulary': stats['valid_words'],
+            'learning_sessions': stats['learning_sessions'],
+            'auto_detected_patterns': stats['error_patterns'],
+            'last_learning_session': stats['last_session'],
             'dictionary_health': 'dynamic_learning' if stats['total_corrections'] > 0 else 'learning_ready'
         }
 
