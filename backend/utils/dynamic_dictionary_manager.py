@@ -23,7 +23,14 @@ class DynamicDictionaryManager:
         self.dictionary = dynamic_dictionary
     
     def seed_from_external_source(self, source_path: Path) -> int:
-        """Inicializar diccionario desde fuente externa."""
+        """Inicializar diccionario desde fuente externa (solo la primera vez).
+        
+        Args:
+            source_path: Ruta al archivo de fuente externa (.json o .txt)
+            
+        Returns:
+            Número de elementos cargados exitosamente
+        """
         try:
             if source_path.suffix.lower() == '.json':
                 with open(source_path, 'r', encoding='utf-8') as f:
