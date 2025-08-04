@@ -55,7 +55,32 @@ class DynamicDictionaryManager:
             
         except Exception as e:
             logger.error(f"Error inicializando diccionario: {e}")
-            return 0
+    def export_learned_corrections(self, export_path: Path) -> bool:
+        """Exporta correcciones aprendidas a archivo JSON.
+        
+        Args:
+            export_path: Ruta donde guardar las correcciones exportadas
+            
+        Returns:
+            True si la exportación fue exitosa, False en caso contrario
+        """
+        try:
+            export_data = {
+                'corrections': self.dictionary.corrections,
+                'valid_words': list(self.dictionary.valid_words),
+                'error_patterns': self.dictionary.error_patterns,
+                'statistics': self.dictionary.get_statistics(),
+                'exported_at': datetime.now().isoformat()
+            }
+            
+            with open(export_path, 'w', encoding='utf-8') as f:
+                json.dump(export_data, f, ensure_ascii=False, indent=2)
+            
+            logger.info(f"Correcciones exportadas a: {export_path}")
+            return True
+        except Exception as e:
+            logger.error(f"Error exportando: {e}")
+            return False
     
     def get_learning_report(self) -> Dict[str, any]:
         """Genera reporte de aprendizaje dinámico."""
