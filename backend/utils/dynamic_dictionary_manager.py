@@ -1,5 +1,6 @@
 """
 Gestor para el diccionario dinámico.
+Maneja la inicialización, exportación y reportes del diccionario.
 """
 import logging
 import json
