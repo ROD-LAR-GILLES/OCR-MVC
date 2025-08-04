@@ -37,6 +37,7 @@ class DynamicDictionaryManager:
                     external_data = json.load(f)
                 
                 if isinstance(external_data, dict):
+                    # Añadir como correcciones iniciales
                     for error, correction in external_data.items():
                         self.dictionary.add_manual_correction(error, correction, confidence=0.8)
                     
