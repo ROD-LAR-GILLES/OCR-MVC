@@ -44,6 +44,15 @@ class DynamicDictionaryManager:
                     logger.info(f"Diccionario inicializado con {len(external_data)} correcciones")
                     return len(external_data)
             
+            elif source_path.suffix.lower() == '.txt':
+                # Texto de ejemplo para aprender vocabulario válido
+                with open(source_path, 'r', encoding='utf-8') as f:
+                    text = f.read()
+                
+                stats = self.dictionary.learn_from_text(text, f"seed_{source_path.name}")
+                logger.info(f"Diccionario inicializado aprendiendo de texto: {stats}")
+                return stats['new_valid_words']
+            
         except Exception as e:
             logger.error(f"Error inicializando diccionario: {e}")
             return 0
