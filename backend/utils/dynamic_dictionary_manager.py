@@ -23,46 +23,54 @@ class DynamicDictionaryManager:
         self.dictionary = dynamic_dictionary
     
     def seed_from_external_source(self, source_path: Path) -> int:
-        """Inicializar diccionario desde fuente externa (solo la primera vez).
-        
-        Args:
-            source_path: Ruta al archivo de fuente externa (.json o .txt)
-            
-        Returns:
-            Número de elementos cargados exitosamente
         """
+        Inicializar diccionario desde fuente externa (solo la primera vez).
+        Args:
+            source_path (Path): Ruta al archivo de fuente externa (.json o .txt)
+        Returns:
+            int: Número de elementos cargados exitosamente. 0 si hubo error.
+        Raises:
+            FileNotFoundError: Si el archivo no existe.
+            ValueError: Si el archivo no tiene el formato esperado.
+        """
+        if not source_path.exists():
+            logger.error(f"El archivo {source_path} no existe.")
+            raise FileNotFoundError(f"El archivo {source_path} no existe.")
         try:
             if source_path.suffix.lower() == '.json':
-                with open(source_path, 'r', encoding='utf-8') as f:
+                with source_path.open('r', encoding='utf-8') as f:
                     external_data = json.load(f)
-                
-                if isinstance(external_data, dict):
-                    # Añadir como correcciones iniciales
-                    for error, correction in external_data.items():
-                        self.dictionary.add_manual_correction(error, correction, confidence=0.8)
-                    
-                    logger.info(f"Diccionario inicializado con {len(external_data)} correcciones")
-                    return len(external_data)
-            
+                if not isinstance(external_data, dict):
+                    logger.error("El archivo JSON no contiene un diccionario.")
+                    raise ValueError("El archivo JSON no contiene un diccionario.")
+                for error, correction in external_data.items():
+                    self.dictionary.add_manual_correction(error, correction, confidence=0.8)
+                logger.info(f"Diccionario inicializado con {len(external_data)} correcciones")
+                return len(external_data)
             elif source_path.suffix.lower() == '.txt':
-                # Texto de ejemplo para aprender vocabulario válido
-                with open(source_path, 'r', encoding='utf-8') as f:
-                    text = f.read()
-                
+                text = source_path.read_text(encoding='utf-8')
+                if not text.strip():
+                    logger.warning(f"El archivo {source_path} está vacío.")
+                    return 0
                 stats = self.dictionary.learn_from_text(text, f"seed_{source_path.name}")
                 logger.info(f"Diccionario inicializado aprendiendo de texto: {stats}")
-                return stats['new_valid_words']
-            
+                return stats.get('new_valid_words', 0)
+            else:
+                logger.error("Formato de archivo no soportado. Solo .json o .txt")
+                raise ValueError("Formato de archivo no soportado. Solo .json o .txt")
+        except (json.JSONDecodeError, UnicodeDecodeError) as e:
+            logger.error(f"Error leyendo el archivo: {e}")
+            raise ValueError(f"Error leyendo el archivo: {e}")
         except Exception as e:
             logger.error(f"Error inicializando diccionario: {e}")
+            return 0
     def export_learned_corrections(self, export_path: Path) -> bool:
-        """Exporta correcciones aprendidas a archivo JSON.
-        
+        """
+        Exporta correcciones aprendidas a archivo JSON.
         Args:
-            export_path: Ruta donde guardar las correcciones exportadas
-            
+            export_path (Path): Ruta donde guardar las correcciones exportadas
         Returns:
-            True si la exportación fue exitosa, False en caso contrario
+            bool: True si la exportación fue exitosa, False en caso contrario
         """
         try:
             export_data = {
@@ -72,34 +80,30 @@ class DynamicDictionaryManager:
                 'statistics': self.dictionary.get_statistics(),
                 'exported_at': datetime.now().isoformat()
             }
-            
-            with open(export_path, 'w', encoding='utf-8') as f:
-                json.dump(export_data, f, ensure_ascii=False, indent=2)
-            
+            export_path.write_text(json.dumps(export_data, ensure_ascii=False, indent=2), encoding='utf-8')
             logger.info(f"Correcciones exportadas a: {export_path}")
             return True
         except Exception as e:
             logger.error(f"Error exportando: {e}")
             return False
     
-    def get_learning_report(self) -> Dict[str, any]:
-        """Genera reporte de aprendizaje dinámico.
-        
+    def get_learning_report(self) -> Dict[str, object]:
+        """
+        Genera reporte de aprendizaje dinámico.
         Returns:
-            Diccionario con estadísticas completas del aprendizaje
+            Dict[str, object]: Diccionario con estadísticas completas del aprendizaje
         """
         stats = self.dictionary.get_statistics()
-        
         return {
             'timestamp': datetime.now().isoformat(),
             'learning_mode': 'dynamic',
             'hardcoded_words': 0,  # ¡CERO palabras hardcodeadas!
-            'learned_corrections': stats['total_corrections'],
-            'learned_vocabulary': stats['valid_words'],
-            'learning_sessions': stats['learning_sessions'],
-            'auto_detected_patterns': stats['error_patterns'],
-            'last_learning_session': stats['last_session'],
-            'dictionary_health': 'dynamic_learning' if stats['total_corrections'] > 0 else 'learning_ready'
+            'learned_corrections': stats.get('total_corrections', 0),
+            'learned_vocabulary': stats.get('valid_words', []),
+            'learning_sessions': stats.get('learning_sessions', 0),
+            'auto_detected_patterns': stats.get('error_patterns', []),
+            'last_learning_session': stats.get('last_session', None),
+            'dictionary_health': 'dynamic_learning' if stats.get('total_corrections', 0) > 0 else 'learning_ready'
         }
 
 # Instancia global
